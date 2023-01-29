@@ -2,36 +2,44 @@
 #define BIG_INT_H
 
 #include <string>
+#include <cstring>
 
 class BigInteger {
 private:
     std::string digits;
     bool minus;
 public:
-    BigInteger(unsigned long long);
-    explicit BigInteger(std::string &);
-    explicit BigInteger(const char*);
-    explicit BigInteger(BigInteger&);
+    BigInteger(long long n = 0);
+    BigInteger(const std::string &);
+    BigInteger(const char*);
+    BigInteger(const BigInteger&);
+
+    bool getMinus();
 
     BigInteger& operator=(const BigInteger&);
 
-    BigInteger& operator-();
+    void swap(BigInteger &other) noexcept;
+    friend int length(const BigInteger& bi);
+
+
+    void operator-();
 
     BigInteger& operator++();
     BigInteger operator++(int);
     BigInteger& operator--();
     BigInteger operator--(int);
 
+    friend BigInteger& operator+=(BigInteger&, const BigInteger&);
+    friend BigInteger  operator+(const BigInteger&, const BigInteger&);
+    friend BigInteger& operator-=(BigInteger&, const BigInteger&);
+    friend BigInteger  operator-(const BigInteger&, const BigInteger&);
+
     BigInteger NthCatalan(int);
     BigInteger NthFibonacci(int);
     BigInteger Factorial(int);    
-
 };
 
-BigInteger& operator+=(BigInteger&, const BigInteger&);
-BigInteger  operator+(const BigInteger&, const BigInteger&);
-BigInteger& operator-=(BigInteger&, const BigInteger&);
-BigInteger  operator-(const BigInteger&, const BigInteger&);
+
 
 BigInteger& operator*=(BigInteger&, const BigInteger&);
 BigInteger  operator*(const BigInteger&, const BigInteger&);
