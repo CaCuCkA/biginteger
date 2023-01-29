@@ -6,6 +6,7 @@
 class BigInteger {
 private:
     std::string digits;
+    bool minus;
 public:
     BigInteger(unsigned long long);
     explicit BigInteger(std::string &);
@@ -13,6 +14,8 @@ public:
     explicit BigInteger(BigInteger&);
 
     BigInteger& operator=(const BigInteger&);
+
+    BigInteger& operator-();
 
     BigInteger& operator++();
     BigInteger operator++(int);
