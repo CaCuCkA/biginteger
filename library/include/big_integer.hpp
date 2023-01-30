@@ -1,6 +1,7 @@
 #ifndef BIG_INT_H
 #define BIG_INT_H
 
+#include <iostream>
 #include <string>
 #include <cstring>
 #include <vector>
@@ -37,9 +38,9 @@ public:
     friend BigInteger& operator-=(BigInteger&, const BigInteger&);
     friend BigInteger  operator-(const BigInteger&, const BigInteger&);
 
-    BigInteger NthCatalan(int);
-    BigInteger NthFibonacci(int);
-    BigInteger Factorial(int);    
+    friend BigInteger NthCatalan(int);
+    friend BigInteger NthFibonacci(int);
+    friend BigInteger Factorial(int);    
 
     friend BigInteger& operator*=(BigInteger&, const BigInteger&);
     friend BigInteger  operator*(const BigInteger&, const BigInteger&);
@@ -52,19 +53,19 @@ public:
     friend BigInteger& operator^=(BigInteger&, const BigInteger&);
     friend BigInteger  operator^(const BigInteger&, const BigInteger&);
 
+    friend std::ostream& operator<<(std::ostream&, const BigInteger&);
+    friend std::istream& operator>>(std::istream&, BigInteger&);
+
+    friend BigInteger sqrt(BigInteger &a);
+
+    friend bool operator==(const BigInteger&, const BigInteger&);
+    friend bool operator!=(const BigInteger&, const BigInteger&);
+
+    friend bool operator>(const BigInteger&, const BigInteger&);
+    friend bool operator>=(const BigInteger&, const BigInteger&);
+    friend bool operator<(const BigInteger&, const BigInteger&);
+    friend bool operator<=(const BigInteger&, const BigInteger&);
+
 };
-
-BigInteger sqrt(BigInteger &a);
-
-std::ostream& operator<<(std::ostream&, const BigInteger&);
-std::istream& operator>>(std::istream&, BigInteger&);
-
-bool operator==(const BigInteger&, const BigInteger&);
-bool operator!=(const BigInteger&, const BigInteger&);
-
-bool operator>(const BigInteger&, const BigInteger&);
-bool operator>=(const BigInteger&, const BigInteger&);
-bool operator<(const BigInteger&, const BigInteger&);
-bool operator<=(const BigInteger&, const BigInteger&);
 
 #endif

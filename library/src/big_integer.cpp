@@ -57,7 +57,7 @@ bool Null(const BigInteger& bi) {
 }
 
 
-void devide_by_two(BigInteger& a) {
+void divide_by_two(BigInteger& a) {
     int add = 0;
     for (int i = a.digits.size() - 1; i >= 0; --i) {
         int digit = ((a.digits[i] - 48) >> 1) + add;
@@ -101,92 +101,82 @@ BigInteger BigInteger::operator--(int) {
 
 BigInteger operator+(const BigInteger& a, const BigInteger& b) {
     BigInteger copy(a);
-    if (a.minus == b.minus) {
-        copy += b;
-    } else {
-        if (a > b) {
-            copy -= b;
-        } else {
-            copy = b;
-            copy -= a;
-        }
-    }
-    
+    copy += b;    
     return copy;
 }
 
 
 BigInteger& operator+=(BigInteger& a, const BigInteger& b) {
-    int temp_sum = 0, digit = 0,
-            size_a = length(a), size_b = length(b);
-    
-    if (size_a < size_b){
-        a.digits.append(size_b - size_a, '0');
-        size_a = size_b;
-    }
-
-    for (int i = 0; i < size_a; ++i) {
-        if (i < size_b) {
-            temp_sum = (a.digits[i] + b.digits[i] - 2 * 48) + digit;
-        } else {
-            temp_sum = (a.digits[i] - 48) + digit;
+    if (a.minus == b.minus) {
+        int temp_sum = 0, digit = 0,
+                size_a = length(a), size_b = length(b);
+        
+        if (size_a < size_b){
+            a.digits.append(size_b - size_a, '0');
+            size_a = size_b;
         }
-        digit = temp_sum / 10;
-        a.digits[i] = (temp_sum % 10) + 48;
+
+        for (int i = 0; i < size_a; ++i) {
+            if (i < size_b) {
+                temp_sum = (a.digits[i] + b.digits[i] - 2 * 48) + digit;
+            } else {
+                temp_sum = (a.digits[i] - 48) + digit;
+            }
+            digit = temp_sum / 10;
+            a.digits[i] = (temp_sum % 10) + 48;
+        }
+
+        if (digit) a.digits.push_back(digit);
+    } else {
+        if (a < b) a.swap(b);
+        a -= b;
     }
-
-    if (digit) a.digits.push_back(digit);
-
     return a;
 }
 
 
 BigInteger operator-(const BigInteger& a, const BigInteger& b) {
     BigInteger copy(a);
-    if (a.minus || b.minus) {
-        copy += b;
-    } else {
-        if (a > b) {
-            copy -= b;
-        } else {
-            copy = b;
-            copy -= a;
-        }
-    } 
+    copy -= b;
     return copy;
 }
 
 
 BigInteger& operator-=(BigInteger& a, const BigInteger& b) {
-    int digit = 0, temp_diff = 0,
-            size_a = length(a), size_b = length(b);
-    
-    for (int i = 0; i < size_a; ++i) {
-        if (i < size_b) {
-            temp_diff = (a.digits[i] - b.digits[i]) + digit;
-        } else {
-            temp_diff = (a.digits[i] - 48) + digit;
+    if (a.minus || b.minus) {
+        a += b;
+    } else {
+        if (a < b) {
+            a.swap(b);
         }
-        if (temp_diff < 0) {
-            temp_diff += 10;
-            digit = -1;
-        } else {
-            digit = 0;
+        int digit = 0, temp_diff = 0,
+            size_a = length(a), size_b = length(b); 
+        for (int i = 0; i < size_a; ++i) {
+            if (i < size_b) {
+                temp_diff = (a.digits[i] - b.digits[i]) + digit;
+            } else {
+                temp_diff = (a.digits[i] - 48) + digit;
+            }
+            if (temp_diff < 0) {
+                temp_diff += 10;
+                digit = -1;
+            } else {
+                digit = 0;
+            }
+            a.digits[i] = temp_diff + 48;
         }
-        a.digits[i] = temp_diff + 48;
-    }
 
-    while (size_a > 1 && a.digits[size_a - 1] == 0) {
-        a.digits.pop_back();
-        --size_a;
-    }
+        while (size_a > 1 && a.digits[size_a - 1] == 0) {
+            a.digits.pop_back();
+            --size_a;
+            }        
+    }   
     return a;
 }
 
 
 BigInteger operator*(const BigInteger& a, const BigInteger& b) {
     BigInteger copy(a);
-    copy.minus = !(a.minus == b.minus);
     copy *= b;
     return copy;
 }
@@ -213,6 +203,7 @@ BigInteger& operator*=(BigInteger& a, const BigInteger& b) {
         for (int i = size_a - 1; i >= 1 && !vc[i]; --i) {
             a.digits.pop_back();
         }
+        copy.minus = a.minus != b.minus;
     } else {
         a = BigInteger();
     }
@@ -222,7 +213,6 @@ BigInteger& operator*=(BigInteger& a, const BigInteger& b) {
 
 BigInteger operator/(const BigInteger& a, const BigInteger& b) {
     BigInteger copy(a);
-    copy.minus = !(a.minus == b.minus);
     copy /= b;
     return copy;
 }
@@ -237,7 +227,7 @@ BigInteger& operator/=(BigInteger& a, const BigInteger& b) {
         a = BigInteger(1);
     } else {
         int i, logic_cat = 0, cc,
-                size_a = length(a), size_b = length(b);
+                size_a = length(a);
         std::vector<int> cat(size_a, 0);
         BigInteger temp;
         for (i = size_a - 1; temp * 10 + (a.digits[i] - 48) < b; --i) {
@@ -256,13 +246,15 @@ BigInteger& operator/=(BigInteger& a, const BigInteger& b) {
         }
         a.digits.resize(logic_cat);
     }
+    if (length(a) > 1 || a.digits[0] != '0')
+        a.minus = a.minus != b.minus;
+
     return a;
 }
 
 
 BigInteger operator%(const BigInteger& a, const BigInteger& b) {
     BigInteger copy(a);
-    copy.minus = !(a.minus == b.minus);
     copy %= b;
     return copy;
 }
@@ -275,10 +267,10 @@ BigInteger& operator%=(BigInteger& a, const BigInteger& b) {
         a = BigInteger();
     } else if (a > b) {
         int i, logic_cat = 0, cc, 
-                size_a = length(a), size_b = length(b);
+                size_a = length(a);
         std::vector<int> cat(size_a, 0);
         BigInteger temp;
-        for (i = n - 1; temp * 10 + (a.digits[i] - 48) < b; --i) {
+        for (i = size_a - 1; temp * 10 + (a.digits[i] - 48) < b; --i) {
             temp *= 10;
             temp += a.digits[i] - 48;
         }
@@ -289,28 +281,96 @@ BigInteger& operator%=(BigInteger& a, const BigInteger& b) {
             cat[logic_cat++] = cc;
         }
         a = temp;
+        a.minus = a.minus != b.minus;
     }
+    
     return a;
 }
 
 
-BigInteger& operator^(const BigInteger& a, const BigInteger& b) {
+BigInteger operator^(const BigInteger& a, const BigInteger& b) {
     BigInteger copy(a);
-    copy.minus = (a.minus ^ b.minus);
     copy ^= b;
     return copy;
 }
 
 
 BigInteger& operator^=(BigInteger& a, const BigInteger& b) {
+    a.minus = (a.minus ^ b.minus);
     BigInteger Exponent, Base(a);
     Exponent = b;
     a = 1;
     while (!Null(Exponent)) {
-        if ((Exponent[0] - 48) & 1)
+        if ((Exponent.digits[0] - 48) & 1)
             a *= Base;
         Base *= Base;
-        devide_by_two(Exponent);
+        divide_by_two(Exponent);
     }
     return a;
+}
+
+
+bool operator==(const BigInteger& lhs, const BigInteger& rhs) {
+    return lhs.digits == rhs.digits;
+}
+
+
+bool operator!=(const BigInteger& lhs, const BigInteger& rhs) {
+    return !(lhs == rhs);
+}
+
+
+bool operator<(const BigInteger& lhs, const BigInteger& rhs) {
+    int n = length(lhs), m = length(rhs);
+    if (n != m) return n < m;
+    
+    while (n--) {
+        if (lhs.digits[n] != rhs.digits[n]) {
+            return lhs.digits[n] < rhs.digits[n];
+        }
+    }
+    return false;
+}
+
+
+bool operator<=(const BigInteger& lhs, const BigInteger& rhs) {
+    return !(lhs > rhs);
+}
+
+
+bool operator>(const BigInteger& lhs, const BigInteger& rhs) {
+    return rhs < lhs;
+}
+
+
+bool operator>=(const BigInteger& lhs, const BigInteger& rhs) {
+    return !(lhs < rhs);
+}
+
+
+std::ostream& operator<<(std::ostream &out, const BigInteger& a) {
+    if (a.minus) std::cout << '-';
+    for (int i = a.digits.size() - 1; i >= 0; --i) {
+        std::cout << a.digits[i] - 48;
+    }
+    return std::cout;
+}
+
+
+std::istream& operator>>(std::istream &in, BigInteger& a) {
+    std::string s;
+    in >> s;
+    int n = s.size();
+    for (int i = n - 1; i >= 0; --i) {
+        if (!isdigit(s[i])) {
+            if (s[i] == '-') {
+                a.minus = true;
+                continue;
+            } else {
+                throw("{ERROR}: Invalid number");
+            }
+        }    
+        a.digits[n - i - 1] = s[i];
+    }
+    return in;
 }
