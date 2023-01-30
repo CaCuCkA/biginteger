@@ -21,8 +21,9 @@ public:
     BigInteger& operator=(const BigInteger&);
 
     void swap(BigInteger &other) noexcept;
-    friend int length(const BigInteger& bi);
-    friend bool Null(const BigInteger& bi);
+    friend int length(const BigInteger&);
+    friend bool Null(const BigInteger&);
+    friend void divide_by_two(BigInteger&);
 
     void operator-();
 

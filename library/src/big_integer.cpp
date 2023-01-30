@@ -3,6 +3,7 @@
 
 #include "../include/big_integer.hpp"
 
+
 BigInteger::BigInteger(long long n) {
     if (n < 0) minus = true;
     do {
@@ -10,6 +11,7 @@ BigInteger::BigInteger(long long n) {
         n /= 10;
     } while (n);
 }
+
 
 BigInteger::BigInteger(const char* c_str) {
     digits = "";
@@ -24,10 +26,13 @@ BigInteger::BigInteger(const char* c_str) {
     }
 }
 
+
 BigInteger::BigInteger(const std::string& str) : BigInteger(str.c_str()) {}
+
 
 BigInteger::BigInteger(const BigInteger& bi)
     : digits(bi.digits), minus(bi.minus) {}
+
 
 BigInteger& BigInteger::operator=(const BigInteger& bi) {
     digits = bi.digits;
@@ -35,26 +40,43 @@ BigInteger& BigInteger::operator=(const BigInteger& bi) {
     return *this;
 }
 
+
 void BigInteger::swap(BigInteger &other) noexcept {
     digits.swap(other.digits);
     std::swap(minus, other.minus);
 }
 
+
 int length(const BigInteger& bi) {
     return bi.digits.size();
 }
 
+
 bool Null(const BigInteger& bi) {
     return bi.digits.size() == 1 && bi.digits[0] == '0';
+}
+
+
+void devide_by_two(BigInteger& a) {
+    int add = 0;
+    for (int i = a.digits.size() - 1; i >= 0; --i) {
+        int digit = ((a.digits[i] - 48) >> 1) + add;
+        add = (((a.digits[i] - 48) & 1) * 5);
+        a.digits[i] = digit + 48;
+    }
+    while (a.digits.size() > 1 && !a.digits.back())
+        a.digits.pop_back();
 }
 
 void BigInteger::operator-() {
     minus = !minus;
 }
 
+
 BigInteger& BigInteger::operator++() {
     return *this += 1;
 }
+
 
 BigInteger BigInteger::operator++(int) {
     BigInteger copy;
@@ -63,9 +85,11 @@ BigInteger BigInteger::operator++(int) {
     return copy;
 }
 
+
 BigInteger& BigInteger::operator--() {
     return *this -= 1;
 }
+
 
 BigInteger BigInteger::operator--(int) {
     BigInteger copy;
@@ -73,6 +97,7 @@ BigInteger BigInteger::operator--(int) {
     --*this;
     return copy;
 }
+
 
 BigInteger operator+(const BigInteger& a, const BigInteger& b) {
     BigInteger copy(a);
@@ -89,6 +114,7 @@ BigInteger operator+(const BigInteger& a, const BigInteger& b) {
     
     return copy;
 }
+
 
 BigInteger& operator+=(BigInteger& a, const BigInteger& b) {
     int temp_sum = 0, digit = 0,
@@ -114,6 +140,7 @@ BigInteger& operator+=(BigInteger& a, const BigInteger& b) {
     return a;
 }
 
+
 BigInteger operator-(const BigInteger& a, const BigInteger& b) {
     BigInteger copy(a);
     if (a.minus || b.minus) {
@@ -128,6 +155,7 @@ BigInteger operator-(const BigInteger& a, const BigInteger& b) {
     } 
     return copy;
 }
+
 
 BigInteger& operator-=(BigInteger& a, const BigInteger& b) {
     int digit = 0, temp_diff = 0,
@@ -155,12 +183,14 @@ BigInteger& operator-=(BigInteger& a, const BigInteger& b) {
     return a;
 }
 
+
 BigInteger operator*(const BigInteger& a, const BigInteger& b) {
     BigInteger copy(a);
     copy.minus = !(a.minus == b.minus);
     copy *= b;
     return copy;
 }
+
 
 BigInteger& operator*=(BigInteger& a, const BigInteger& b) {
     if (!Null(a) && !Null(b)) {
@@ -189,12 +219,14 @@ BigInteger& operator*=(BigInteger& a, const BigInteger& b) {
     return a;
 }
 
+
 BigInteger operator/(const BigInteger& a, const BigInteger& b) {
     BigInteger copy(a);
     copy.minus = !(a.minus == b.minus);
     copy /= b;
     return copy;
 }
+
 
 BigInteger& operator/=(BigInteger& a, const BigInteger& b) {
     if (Null(b)) {
@@ -228,3 +260,57 @@ BigInteger& operator/=(BigInteger& a, const BigInteger& b) {
 }
 
 
+BigInteger operator%(const BigInteger& a, const BigInteger& b) {
+    BigInteger copy(a);
+    copy.minus = !(a.minus == b.minus);
+    copy %= b;
+    return copy;
+}
+
+
+BigInteger& operator%=(BigInteger& a, const BigInteger& b) {
+    if (Null(b)) {
+        throw std::logic_error("{ERROR}: Division by 0");
+    } else if (a == b) {
+        a = BigInteger();
+    } else if (a > b) {
+        int i, logic_cat = 0, cc, 
+                size_a = length(a), size_b = length(b);
+        std::vector<int> cat(size_a, 0);
+        BigInteger temp;
+        for (i = n - 1; temp * 10 + (a.digits[i] - 48) < b; --i) {
+            temp *= 10;
+            temp += a.digits[i] - 48;
+        }
+        for (; i >= 0; --i) {
+            temp = temp * 10 + (a.digits[i] - 48);
+            for (cc = 9; cc * b > temp; --cc);
+            temp -= cc * b;
+            cat[logic_cat++] = cc;
+        }
+        a = temp;
+    }
+    return a;
+}
+
+
+BigInteger& operator^(const BigInteger& a, const BigInteger& b) {
+    BigInteger copy(a);
+    copy.minus = (a.minus ^ b.minus);
+    copy ^= b;
+    return copy;
+}
+
+
+BigInteger& operator^=(BigInteger& a, const BigInteger& b) {
+    BigInteger Exponent, Base(a);
+    Exponent = b;
+    a = 1;
+    while (!Null(Exponent)) {
+        if ((Exponent[0] - 48) & 1)
+            a *= Base;
+        Base *= Base;
+        devide_by_two(Exponent);
+    }
+    return a;
+}
