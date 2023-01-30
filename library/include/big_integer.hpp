@@ -3,6 +3,8 @@
 
 #include <string>
 #include <cstring>
+#include <vector>
+#include <stdexcept>
 
 class BigInteger {
 private:
@@ -20,7 +22,7 @@ public:
 
     void swap(BigInteger &other) noexcept;
     friend int length(const BigInteger& bi);
-
+    friend bool Null(const BigInteger& bi);
 
     void operator-();
 
@@ -37,20 +39,19 @@ public:
     BigInteger NthCatalan(int);
     BigInteger NthFibonacci(int);
     BigInteger Factorial(int);    
+
+    friend BigInteger& operator*=(BigInteger&, const BigInteger&);
+    friend BigInteger  operator*(const BigInteger&, const BigInteger&);
+    friend BigInteger& operator/=(BigInteger&, const BigInteger&);
+    friend BigInteger  operator/(const BigInteger&, const BigInteger&);
+
+    friend BigInteger  operator%(const BigInteger&, const BigInteger&);
+    friend BigInteger& operator%=(BigInteger&, const BigInteger&);
+
+    friend BigInteger& operator^=(BigInteger&, const BigInteger&);
+    friend BigInteger  operator^(const BigInteger&, const BigInteger&);
+
 };
-
-
-
-BigInteger& operator*=(BigInteger&, const BigInteger&);
-BigInteger  operator*(const BigInteger&, const BigInteger&);
-BigInteger& operator/=(BigInteger&, const BigInteger&);
-BigInteger  operator/(const BigInteger&, const BigInteger&);
-
-BigInteger  operator%(const BigInteger&, const BigInteger&);
-BigInteger& operator%=(BigInteger&, const BigInteger&);
-
-BigInteger& operator^=(BigInteger&, const BigInteger&);
-BigInteger  operator^(const BigInteger&, const BigInteger&);
 
 BigInteger sqrt(BigInteger &a);
 
