@@ -17,8 +17,6 @@ public:
     BigInteger(const char*);
     BigInteger(const BigInteger&);
 
-    bool getMinus();
-
     BigInteger& operator=(const BigInteger&);
 
     void swap(BigInteger &other) noexcept;
@@ -38,9 +36,9 @@ public:
     friend BigInteger& operator-=(BigInteger&, const BigInteger&);
     friend BigInteger  operator-(const BigInteger&, const BigInteger&);
 
-    friend BigInteger NthCatalan(int);
-    friend BigInteger NthFibonacci(int);
-    friend BigInteger Factorial(int);    
+    friend BigInteger NthCatalan(int&);
+    friend BigInteger NthFibonacci(int&);
+    friend BigInteger Factorial(int&);    
 
     friend BigInteger& operator*=(BigInteger&, const BigInteger&);
     friend BigInteger  operator*(const BigInteger&, const BigInteger&);
@@ -56,7 +54,7 @@ public:
     friend std::ostream& operator<<(std::ostream&, const BigInteger&);
     friend std::istream& operator>>(std::istream&, BigInteger&);
 
-    friend BigInteger sqrt(BigInteger &a);
+    friend BigInteger sqrt(BigInteger &);
 
     friend bool operator==(const BigInteger&, const BigInteger&);
     friend bool operator!=(const BigInteger&, const BigInteger&);

@@ -128,7 +128,10 @@ BigInteger& operator+=(BigInteger& a, const BigInteger& b) {
 
         if (digit) a.digits.push_back(digit);
     } else {
-        if (a < b) a.swap(b);
+        if (a < b) {
+            BigInteger temp = b;
+            a = temp - a;
+        }
         a -= b;
     }
     return a;
@@ -147,7 +150,8 @@ BigInteger& operator-=(BigInteger& a, const BigInteger& b) {
         a += b;
     } else {
         if (a < b) {
-            a.swap(b);
+            BigInteger temp = b;
+            a = temp - a;
         }
         int digit = 0, temp_diff = 0,
             size_a = length(a), size_b = length(b); 
@@ -203,7 +207,7 @@ BigInteger& operator*=(BigInteger& a, const BigInteger& b) {
         for (int i = size_a - 1; i >= 1 && !vc[i]; --i) {
             a.digits.pop_back();
         }
-        copy.minus = a.minus != b.minus;
+        a.minus = a.minus != b.minus;
     } else {
         a = BigInteger();
     }
@@ -349,11 +353,11 @@ bool operator>=(const BigInteger& lhs, const BigInteger& rhs) {
 
 
 std::ostream& operator<<(std::ostream &out, const BigInteger& a) {
-    if (a.minus) std::cout << '-';
+    if (a.minus) out << '-';
     for (int i = a.digits.size() - 1; i >= 0; --i) {
-        std::cout << a.digits[i] - 48;
+        out << a.digits[i] - 48;
     }
-    return std::cout;
+    return out;
 }
 
 
@@ -373,4 +377,65 @@ std::istream& operator>>(std::istream &in, BigInteger& a) {
         a.digits[n - i - 1] = s[i];
     }
     return in;
+}
+
+
+BigInteger sqrt(BigInteger &a) {
+    BigInteger left(1), right(a), v(1), mid, prod;
+    divide_by_two(right);
+    while (left <= right) {
+        mid += left;
+        mid += right;
+        divide_by_two(mid);
+        prod = (mid * mid);
+        if (prod <= a) {
+            v = mid;
+            ++mid;
+            left = mid;
+        } else {
+            --mid;
+            right = mid;
+        }
+        mid = BigInteger();
+    }
+    return v;
+}
+
+
+BigInteger NthCatalan(int& n) {
+    BigInteger a(1), b;
+    for (int i = 2; i <= n; ++i) {
+        a *= i;
+    }
+    b = a;
+    for (int i = n + 1; i <= 2 * n; ++i) {
+        b *= i;
+    }
+    a *= a;
+    a *= (n + 1);
+    b /= a;
+    return b;
+}
+
+
+BigInteger NthFibonacci(int& n) {
+    BigInteger a(1), b(1), c;
+    if (!n) 
+        return c;
+    --n;
+    while (--n) {
+        c = a + b;
+        b = a;
+        a = c;
+    }
+    return b;
+}
+
+
+BigInteger Factorial(int& n) {
+    BigInteger factrorial(1);
+    for (int i = 2; i <= n; ++i) {
+        factrorial *= i;
+    }
+    return factrorial;
 }
